@@ -14,7 +14,7 @@ The tab name __must__ only include alpha-numeric characters. Replace spaces with
 1. Open the spreadsheet to push to RJMetrics.
 2. Click Tools, Script Editor. Click Close on the Popup, or choose blank project.
 3. Delete the contents of the file currently open
-4. Copy the contents from this repo's [master_file.gs](https://raw.githubusercontent.com/smcavinney/google-spreadsheet-to-RJM/master/master_file.gs) page, and paste into the 'code.gs' script file you have open.
+4. Copy the contents from this repo's [master_file.gs](https://github.com/shaunymca/google-spreadsheet-to-RJM/blob/master/master_file.gs) page, and paste into the 'code.gs' script file you have open.
 5. Go back to the spreadsheet and refresh the page. If you don't see a new dropdown in the toolbar titld "RJMetrics Import", close the spreadsheet and re-open it.
 6. In the "RJMetrics Import" dropdown, click "Change API Key". Enter api key and client id provided in your RJMetrics account.
 7. You will have to choose the key(s) that make each row unique. Enter the relevant column headers exactly as you have them in the sheet. If more than one, separate by commas.
