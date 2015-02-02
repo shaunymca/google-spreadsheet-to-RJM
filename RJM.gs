@@ -41,7 +41,7 @@ function largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey){
   // this first row setting is so the first row gets incremented by 100 at the beginning of the while loop instead of the end.
   var firstrow = -98;
   // send 100 rows at a time, asyncronosly. 
-  while (lastrow >= i){
+  while (lastrow > i){
     firstrow = firstrow + 100
     //Logger.log('rows ' + firstrow + " - " + (firstrow + 100));
     var datarange = sheet.getRange(firstrow, 1, 100, lastcolumn);
