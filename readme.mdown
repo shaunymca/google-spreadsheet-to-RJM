@@ -8,6 +8,7 @@ This app is not endorsed or supported by RJMetrics Inc. Please feel free to cont
 This connector assumes you have headers in in the spreadsheet in row 1 of the spreadsheet.  
 This connectior __will not work__ if you define more than 8 columns as keys.
 The tab name __must__ only include alpha-numeric characters. Replace spaces with dots.
+You should make sure to set the columns to the correct data formats. For example, if a column contains all integers, please make sure it is not formatted as plain text.
 
 ## Installation ##
 
