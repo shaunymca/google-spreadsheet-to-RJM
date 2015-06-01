@@ -52,7 +52,7 @@ function largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey){
     var payload_pre = insertKeys(spreadsheetdata, newkey);
     var payload = JSON.stringify(payload_pre);
     Logger.log("Payload Length" + spreadsheetdata.length)
-    Logger.clear();
+    //Logger.clear();
     var api = ScriptProperties.getProperty('RJMETRICSKEY');
     var cid = ScriptProperties.getProperty('RJMETRICSCID');
     var url = 'https://connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
