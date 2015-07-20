@@ -4,22 +4,35 @@
 function push(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var range = sheet.getDataRange();
-  var lastcolumn = range.getLastColumn();
-  var newkey = normalizeHeaders(ScriptProperties.getProperty('PRIMARYKEY').split(','));
-
-  var tablename = sheet.getSheetName();
-  var firstrow = 2
-// last row minus 1 assuming the first row is headers
-  var lastrow = range.getLastRow() + 1;
-  var i = 101;
-
-  if (lastrow > i){
-    largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey)
-    
+  var tablename = normalizeHeaders([sheet.getSheetName()])[0];
+  if (ScriptProperties.getProperty('RJMETRICSKEY') == null || ScriptProperties.getProperty('RJMETRICSCID') == null || ScriptProperties.getProperty(tablename) == null){
+    Browser.msgBox("You are missing some of the required information to send the data. Please click add the required information in the next prompt");
+    onInstall();
   }
-  else {smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey)};
-  
+  else {
+    var range = sheet.getDataRange();
+    var lastcolumn = range.getLastColumn();
+    Logger.log(tablename);
+    var newkey = normalizeHeaders(ScriptProperties.getProperty(tablename).split(','));
+    var firstrow = 2
+    // last row minus 1 assuming the first row is headers
+    var lastrow = range.getLastRow() + 1;
+    trackdoc(lastrow, tablename);
+    
+    var ua= new UAMeasure ("UA-44376413-2",tablename,ScriptProperties.getProperty('RJMETRICSCID'));
+    ua.postAppView(ScriptProperties.getProperty('RJMETRICSCID'));
+    ua.postAppKill();
+    
+    var i = 101;
+    if (ScriptProperties.getProperty('RJMETRICSKEY') == null || ScriptProperties.getProperty('RJMETRICSCID') == null || tablename == null){
+      msgBox("You are missing some of the required information to send the data. Please click the 'Setup Spreadsheet For Push' in the dropdown");
+    }
+    else if (lastrow > i){
+      largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey)
+      
+    }
+    else {smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey)};
+  }
 }
 
 function insertKeys(spreadsheetdata, keys){
@@ -53,7 +66,7 @@ function largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey){
     //Logger.clear();
     var api = ScriptProperties.getProperty('RJMETRICSKEY');
     var cid = ScriptProperties.getProperty('RJMETRICSCID');
-    var url = 'https://connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
+    var url = 'https://sandbox-connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
     var options = {
       'method': 'post',
       "contentType" : "application/json",
@@ -82,7 +95,7 @@ function smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey){
   Logger.log(payload_pre.length);
   var api = ScriptProperties.getProperty('RJMETRICSKEY');
   var cid = ScriptProperties.getProperty('RJMETRICSCID');
-  var url = 'https://connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
+  var url = 'https://sandbox-connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
   var options = {
     'method': 'post',
     "contentType" : "application/json",
@@ -91,4 +104,15 @@ function smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey){
   var response = UrlFetchApp.fetch(url, options);
   Logger.log(response);
   return response
+}
+
+
+function trackdoc(lastrow, tablename) {
+ var remote = SpreadsheetApp.openById('1f33oopWLMFGtuWQlLpUrpyeScMXnRd9cGSQxKuZ51B0');
+ var remote_sheet = remote.getSheets()[0];
+ var cid = ScriptProperties.getProperty('RJMETRICSCID');
+ var date = new Date();
+ // Appends a new row with 3 columns to the bottom of the
+ // spreadsheet containing the values in the array
+ remote_sheet.appendRow([cid, lastrow, tablename, date ]); 
 }
