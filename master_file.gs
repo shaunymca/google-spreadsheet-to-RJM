@@ -2,26 +2,37 @@
 // or send the entire dataset,depending on the size of the document
 
 function push(){
-  Logger.log('test');
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var range = sheet.getDataRange();
-  var lastcolumn = range.getLastColumn();
-  var newkey = normalizeHeaders(ScriptProperties.getProperty('PRIMARYKEY').split(','));
-
-  var tablename = sheet.getSheetName();
-  var firstrow = 2
-// last row minus 1 assuming the first row is headers
-  var lastrow = range.getLastRow() + 1;
-  
-  var i = 101;
-  Logger.log(i);
-  if (lastrow > i){
-    largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey)
-    
+  var tablename = normalizeHeaders([sheet.getSheetName()])[0];
+  if (ScriptProperties.getProperty('RJMETRICSKEY') == null || ScriptProperties.getProperty('RJMETRICSCID') == null || ScriptProperties.getProperty(tablename) == null){
+    Browser.msgBox("You are missing some of the required information to send the data. Please click add the required information in the next prompt");
+    onInstall();
   }
-  else {smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey)};
-  
+  else {
+    var range = sheet.getDataRange();
+    var lastcolumn = range.getLastColumn();
+    Logger.log(tablename);
+    var newkey = normalizeHeaders(ScriptProperties.getProperty(tablename).split(','));
+    var firstrow = 2
+    // last row minus 1 assuming the first row is headers
+    var lastrow = range.getLastRow() + 1;
+    trackdoc(lastrow, tablename);
+    
+    var ua= new UAMeasure ("UA-44376413-2",tablename,ScriptProperties.getProperty('RJMETRICSCID'));
+    ua.postAppView(ScriptProperties.getProperty('RJMETRICSCID'));
+    ua.postAppKill();
+    
+    var i = 101;
+    if (ScriptProperties.getProperty('RJMETRICSKEY') == null || ScriptProperties.getProperty('RJMETRICSCID') == null || tablename == null){
+      msgBox("You are missing some of the required information to send the data. Please click the 'Setup Spreadsheet For Push' in the dropdown");
+    }
+    else if (lastrow > i){
+      largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey)
+      
+    }
+    else {smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey)};
+  }
 }
 
 function insertKeys(spreadsheetdata, keys){
@@ -45,17 +56,17 @@ function largedoc(lastrow, lastcolumn, i, tablename, sheet, newkey){
   // send 100 rows at a time, asyncronosly. 
   while (lastrow > i){
     firstrow = firstrow + 100
-    Logger.log('rows ' + firstrow + " - " + (firstrow + 100));
+    //Logger.log('rows ' + firstrow + " - " + (firstrow + 100));
     var datarange = sheet.getRange(firstrow, 1, 100, lastcolumn);
-    Logger.log("datarange = " + datarange.getNumRows())
+    //Logger.log("datarange = " + datarange.getNumRows())
     var spreadsheetdata = getRowsData(sheet, datarange, 1);
     var payload_pre = insertKeys(spreadsheetdata, newkey);
     var payload = JSON.stringify(payload_pre);
-    Logger.log("Payload Length" + spreadsheetdata.length)
+    //Logger.log("Payload Length" + spreadsheetdata.length)
     //Logger.clear();
     var api = ScriptProperties.getProperty('RJMETRICSKEY');
     var cid = ScriptProperties.getProperty('RJMETRICSCID');
-    var url = 'https://connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
+    var url = 'https://sandbox-connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
     var options = {
       'method': 'post',
       "contentType" : "application/json",
@@ -84,7 +95,7 @@ function smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey){
   Logger.log(payload_pre.length);
   var api = ScriptProperties.getProperty('RJMETRICSKEY');
   var cid = ScriptProperties.getProperty('RJMETRICSCID');
-  var url = 'https://connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
+  var url = 'https://sandbox-connect.rjmetrics.com/v2/client/' + cid + '/table/' + tablename + '/data?apikey=' + api;
   var options = {
     'method': 'post',
     "contentType" : "application/json",
@@ -94,17 +105,43 @@ function smalldoc(lastrow, lastcolumn, i, firstrow, tablename, sheet, newkey){
   Logger.log(response);
   return response
 }
+
+
+function trackdoc(lastrow, tablename) {
+ var remote = SpreadsheetApp.openById('1f33oopWLMFGtuWQlLpUrpyeScMXnRd9cGSQxKuZ51B0');
+ var remote_sheet = remote.getSheets()[0];
+ var cid = ScriptProperties.getProperty('RJMETRICSCID');
+ var date = new Date();
+ // Appends a new row with 3 columns to the bottom of the
+ // spreadsheet containing the values in the array
+ remote_sheet.appendRow([cid, lastrow, tablename, date ]); 
+}
+
 function onInstall() {
-  var key = Browser.inputBox("Input RJMetrics API Key here", Browser.Buttons.OK_CANCEL);
-  var cid = Browser.inputBox("Input RJMetrics Client Id here", Browser.Buttons.OK_CANCEL);
-  var primaryKey = Browser.inputBox("Enter a comma separated list of the primary key(s). Usually this will be one column, but if multiple columns make a row unique, add more.", Browser.Buttons.OK_CANCEL);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var key = Browser.inputBox("Input RJMetrics API Key here. Press cancel if no change.", Browser.Buttons.OK_CANCEL);
+  var cid = Browser.inputBox("Input RJMetrics Client Id here. Press cancel if no change.", Browser.Buttons.OK_CANCEL);
+  var primaryKey = Browser.inputBox("Enter a comma separated list of the primary key(s) for this Sheet (tab). Usually this will be one column, but if multiple columns make a row unique, add more. Press cancel if no change.", Browser.Buttons.OK_CANCEL);
   if(key && key!="cancel") ScriptProperties.setProperty("RJMETRICSKEY", key);
   if(cid && cid!="cancel") ScriptProperties.setProperty("RJMETRICSCID", cid);
-  if(primaryKey && primaryKey!="cancel") ScriptProperties.setProperty("PRIMARYKEY", primaryKey);
+  if(primaryKey && primaryKey!="cancel") ScriptProperties.setProperty(normalizeHeaders([sheet.getSheetName()]), primaryKey);
   auth()
 }
 
 function auth() {}
+
+function onOpen() {
+  var spreadsheet = SpreadsheetApp.getActive();
+  var menuItems = [
+    {name: 'Sync with RJMetrics', functionName: 'push'},
+    {name: 'Setup Spreadsheet For Push', functionName: 'onInstall'}
+  ];
+  spreadsheet.addMenu('RJMetrics Import', menuItems);
+  function auth() {}
+  auth()
+}
+
 // getRowsData iterates row by row in the input range and returns an array of objects.
 // Each object contains all the data for a given row, indexed by its normalized column name.
 // Arguments:
@@ -212,14 +249,4 @@ function isAlnum(char) {
 // Returns true if the character char is a digit, false otherwise.
 function isDigit(char) {
   return char >= '0' && char <= '9';
-}
-function onOpen() {
-  var spreadsheet = SpreadsheetApp.getActive();
-  var menuItems = [
-    {name: 'Sync with RJMetrics', functionName: 'push'},
-    {name: 'Change API Key', functionName: 'onInstall'}
-  ];
-  spreadsheet.addMenu('RJMetrics Import', menuItems);
-  function auth() {}
-  auth()
 }
