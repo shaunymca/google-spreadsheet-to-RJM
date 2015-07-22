@@ -19,10 +19,6 @@ function push(){
     var lastrow = range.getLastRow() + 1;
     trackdoc(lastrow, tablename);
     
-    var ua= new UAMeasure ("UA-44376413-2",tablename,ScriptProperties.getProperty('RJMETRICSCID'));
-    ua.postAppView(ScriptProperties.getProperty('RJMETRICSCID'));
-    ua.postAppKill();
-    
     var i = 101;
     if (ScriptProperties.getProperty('RJMETRICSKEY') == null || ScriptProperties.getProperty('RJMETRICSCID') == null || tablename == null){
       msgBox("You are missing some of the required information to send the data. Please click the 'Setup Spreadsheet For Push' in the dropdown");
