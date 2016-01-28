@@ -23,10 +23,10 @@ You should make sure to set the columns to the correct data formats. For example
 9. In the "RJMetrics Import" dropdown, click "Sync with RJMetrics"
 
 ## Pushing another tab ##
-If you store data in another tab that you would like to also push to the RJMetrics Import API, you'll need to set up the keys in that sheet as well. You can do so by clicking on that tab, and following the directions below.
-1. In the "RJMetrics Import" dropdown, click "Setup Spreadsheet for Push".
-2. Click "Cancel" on the API Key options and CID options.
-3. Choose the keys(s) in this tab that make each row unique. Enter the relevant column headers exactly as you have them in the sheet. If more than one, separate by commas.
+If you store data in another tab that you would like to also push to the RJMetrics Import API, you'll need to set up the keys in that sheet as well. You can do so by clicking on that tab, and following the directions below.  
+1. In the "RJMetrics Import" dropdown, click "Setup Spreadsheet for Push".  
+2. Click "Cancel" on the API Key options and CID options.  
+3. Choose the keys(s) in this tab that make each row unique. Enter the relevant column headers exactly as you have them in the sheet. If more than one, separate by commas.  
 
 ## Issues ##
 
