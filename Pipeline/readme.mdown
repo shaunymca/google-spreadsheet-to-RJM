@@ -16,15 +16,15 @@ You should make sure to set the columns to the correct data formats. For example
 2. Click Tools, Script Editor. Click Close on the Popup, or choose blank project.
 3. Delete the contents of the file currently open
 4. Copy the contents from this folders's [pipeline-api.gs](https://github.com/shaunymca/google-spreadsheet-to-RJM/blob/master/Pipeline/pipeline-api.gs) page, and paste into the 'code.gs' script file you have open.
-5. Go back to the spreadsheet and refresh the page. If you don't see a new dropdown in the toolbar titled "RJMetrics Import", close the spreadsheet and re-open it.
-6. In the "RJMetrics Import" dropdown, click "Setup Spreadsheet for Push". You'll need to authorize the script to access the data, so log in with the Google account that has access to this sheet.
+5. Go back to the spreadsheet and refresh the page. If you don't see a new dropdown in the toolbar titled "Stitich Import", close the spreadsheet and re-open it.
+6. In the "Stitch Import" dropdown, click "Setup Spreadsheet for Push". You'll need to authorize the script to access the data, so log in with the Google account that has access to this sheet.
 7. Repeat step 6, and Enter api key and client id provided in your Stitch account.
 8. You will have to choose the key(s) that make each row in this tab unique. Enter the relevant column headers exactly as you have them in the sheet. If more than one, separate by commas.
-9. In the "RJMetrics Import" dropdown, click "Sync with RJMetrics"
+9. In the "Stitch Import" dropdown, click "Sync with Stitch"
 
 ## Pushing another tab ##
 If you store data in another tab that you would like to also push to the Stitch Import API, you'll need to set up the keys in that sheet as well. You can do so by clicking on that tab, and following the directions below.  
-1. In the "RJMetrics Import" dropdown, click "Setup Spreadsheet for Push".  
+1. In the "Stitch Import" dropdown, click "Setup Spreadsheet for Push".  
 2. Click "Cancel" on the API Key options and CID options.  
 3. Choose the keys(s) in this tab that make each row unique. Enter the relevant column headers exactly as you have them in the sheet. If more than one, separate by commas.  
 
